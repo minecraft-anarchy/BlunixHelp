@@ -1,0 +1,10 @@
+main: com.blunix.help.BlunixHelp
+name: BlunixHelp
+version: 1.0
+author: Wmorales01
+
+description: Displays information about all the plugins installed in the server.
+
+commands:
+  help:
+  

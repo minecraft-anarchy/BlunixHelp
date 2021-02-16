@@ -1,0 +1,5 @@
+# Format used to display plugin's help.
+help-format: "&9{PLUGIN} &a- &3{DESCRIPTION}"
+
+# Message that will be displayed after the /help message.
+additional-message: "&3Server Website: &lhttps://www.minecraft-anarchy.org"
