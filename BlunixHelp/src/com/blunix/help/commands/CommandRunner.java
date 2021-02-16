@@ -1,9 +1,14 @@
 package com.blunix.help.commands;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import com.blunix.help.BlunixHelp;
@@ -22,22 +27,23 @@ public class CommandRunner implements CommandExecutor {
 			return true;
 		if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
 			plugin.reloadConfig();
+			plugin.reloadDescriptionData();
 			Messager.sendMessage(sender, "&aConfig reloaded.");
 			return true;
 		}
 
 		String message = "";
-		Plugin[] plugins = Bukkit.getPluginManager().getPlugins();
-		for (int i = 0; i < plugins.length; i++) {
-			Plugin plugin = plugins[i];
+		Iterator<Plugin> iterator = getPluginsToDisplay();
+		while (iterator.hasNext()) {
+			Plugin plugin = iterator.next();
 			if (plugin == null)
 				continue;
 
 			message += getPluginHelpMessage(plugin);
-			if (i < plugins.length)
+			if (iterator.hasNext())
 				message += "\n";
 		}
-		message += plugin.getConfig().getString("additional-message");
+		message += "\n" + plugin.getConfig().getString("additional-message");
 		Messager.sendMessage(sender, message);
 		return true;
 	}
@@ -46,19 +52,41 @@ public class CommandRunner implements CommandExecutor {
 		String format = plugin.getConfig().getString("help-format");
 		String pluginName = helpPlugin.getName();
 		String pluginDescription = helpPlugin.getDescription().getDescription();
-		if (pluginDescription == null && plugin.getConfig().getString("plugin-descriptions." + pluginName) != null)
-			pluginDescription = plugin.getConfig().getString("plugin-descriptions." + pluginName);
-		
+		if (pluginDescription == null && getCustomPluginDescription(helpPlugin) != null)
+			pluginDescription = getCustomPluginDescription(helpPlugin);
+
 		else if (pluginDescription == null) {
-			pluginDescription = "Unknown. Check config file to add description message.";
-			addInputToConfig(pluginName);
+			pluginDescription = "Unknown. Add a custom plugin description in the 'plugin_descriptions' file.";
+			addInputToData(pluginName);
 		}
-		
+
 		return format.replace("{PLUGIN}", pluginName).replace("{DESCRIPTION}", pluginDescription);
 	}
 
-	private void addInputToConfig(String pluginName) {
-		plugin.getConfig().set("plugin-descriptions." + pluginName, "");
-		plugin.saveConfig();
+	private String getCustomPluginDescription(Plugin helpPlugin) {
+		FileConfiguration data = plugin.getDescriptionData();
+		ConfigurationSection section = data.getConfigurationSection("plugin-descriptions");
+		if (section == null || !section.contains(helpPlugin.getName()))
+			return null;
+
+		return section.getString(helpPlugin.getName());
+	}
+
+	private Iterator<Plugin> getPluginsToDisplay() {
+		ArrayList<Plugin> toDisplay = new ArrayList<Plugin>();
+		for (String pluginName : plugin.getConfig().getStringList("plugins-to-display")) {
+			Plugin plugin = Bukkit.getPluginManager().getPlugin(pluginName);
+			if (plugin == null) {
+				Bukkit.getLogger().info("Plugin: \"" + pluginName + "\" not found in the plugins folder.");
+				continue;
+			}
+			toDisplay.add(Bukkit.getPluginManager().getPlugin(pluginName));
+		}
+		return toDisplay.iterator();
+	}
+
+	private void addInputToData(String pluginName) {
+		plugin.getDescriptionData().set("plugin-descriptions." + pluginName, "");
+		plugin.saveDescriptionData();
 	}
 }

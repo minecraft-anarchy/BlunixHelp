@@ -3,3 +3,10 @@ help-format: "&9{PLUGIN} &a- &3{DESCRIPTION}"
 
 # Message that will be displayed after the /help message.
 additional-message: "&3Server Website: &lhttps://www.minecraft-anarchy.org"
+
+# Plugins that will be displayed in the /help message.
+plugins-to-display:
+  - BlunixTeleport
+  - BlunixPermissions
+  - BlunixOfflineAuth
+  - BlunixHelp

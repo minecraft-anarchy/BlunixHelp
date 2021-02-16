@@ -1,4 +1,4 @@
-package com.blunix.help;
+package com.blunix.help.commands;
 
 import java.util.ArrayList;
 import java.util.List;
