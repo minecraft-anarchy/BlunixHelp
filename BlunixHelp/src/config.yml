@@ -1,8 +1,11 @@
 # Format used to display plugin's help.
 help-format: "&9{PLUGIN} &a- &3{DESCRIPTION}"
 
+# Message that will be displayed before the /help message.
+additional-top-message: "&6Minecraft Anarchy Plugins Help"
+
 # Message that will be displayed after the /help message.
-additional-message: "&3Server Website: &lhttps://www.minecraft-anarchy.org"
+additional-bottom-message: "&3Server Website: &lhttps://www.minecraft-anarchy.org"
 
 # Plugins that will be displayed in the /help message.
 plugins-to-display:

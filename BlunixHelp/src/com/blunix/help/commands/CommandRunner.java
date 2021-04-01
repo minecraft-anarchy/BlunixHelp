@@ -31,8 +31,7 @@ public class CommandRunner implements CommandExecutor {
 			Messager.sendMessage(sender, "&aConfig reloaded.");
 			return true;
 		}
-
-		String message = "";
+		String message = plugin.getConfig().getString("additional-top-message") + "\n";
 		Iterator<Plugin> iterator = getPluginsToDisplay();
 		while (iterator.hasNext()) {
 			Plugin plugin = iterator.next();
@@ -43,7 +42,7 @@ public class CommandRunner implements CommandExecutor {
 			if (iterator.hasNext())
 				message += "\n";
 		}
-		message += "\n" + plugin.getConfig().getString("additional-message");
+		message += "\n" + plugin.getConfig().getString("additional-bottom-message");
 		Messager.sendMessage(sender, message);
 		return true;
 	}
@@ -52,14 +51,14 @@ public class CommandRunner implements CommandExecutor {
 		String format = plugin.getConfig().getString("help-format");
 		String pluginName = helpPlugin.getName();
 		String pluginDescription = helpPlugin.getDescription().getDescription();
-		if (pluginDescription == null && getCustomPluginDescription(helpPlugin) != null)
+		if (pluginDescription == null && getCustomPluginDescription(helpPlugin) != null
+				&& getCustomPluginDescription(helpPlugin).length() > 0)
 			pluginDescription = getCustomPluginDescription(helpPlugin);
 
-		else if (pluginDescription == null) {
+		else if (pluginDescription == null || pluginDescription.length() == 0) {
 			pluginDescription = "Unknown. Add a custom plugin description in the 'plugin_descriptions' file.";
 			addInputToData(pluginName);
 		}
-
 		return format.replace("{PLUGIN}", pluginName).replace("{DESCRIPTION}", pluginDescription);
 	}
 
